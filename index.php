@@ -10,14 +10,10 @@
         <?php
         /** @var PDO $db */
         $db = require_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
-        $countString = 0;
-        $query = $db ->query('SELECT COUNT(*) from reviews')
-                ->fetchAll(PDO::FETCH_ASSOC); //кол-во всех записей
-        foreach ($query as  $elemQuery){
-            foreach ($elemQuery as $key => $count){
-                $countString += ceil($count / 2);
-            }
-        }
+
+        $query = $db ->query('SELECT COUNT(*) from reviews')//кол-во всех записей
+                    ->fetch();
+        $countString = ceil($query[0] / 2);
         ?>
 
 		<div id="wrapper">
