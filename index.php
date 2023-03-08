@@ -7,28 +7,60 @@
 		<link rel="stylesheet" href="css/styles.css">
 	</head>
 	<body>
+        <?php
+        /** @var PDO $db */
+        $db = require_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
+        $countString = 0;
+        $query = $db ->query('SELECT COUNT(*) from reviews')
+                ->fetchAll(PDO::FETCH_ASSOC); //кол-во всех записей
+        foreach ($query as  $elemQuery){
+            foreach ($elemQuery as $key => $count){
+                $countString += ceil($count / 2);
+            }
+        }
+        ?>
+
 		<div id="wrapper">
 			<h1>Гостевая книга</h1>
+            <div>
+                <nav>
+                    <ul class="pagination">
+                        <li class="disabled">
+                            <a href="/mini_project/?page=1" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <?php for ( $i = 1; $i<=$countString; $i++){?>
+                        <li><a href="/mini_project/?page=<?= $i ?>"><?php echo $i ?></a></li>
+                        <?php } ?>
+                        <li>
+                            <a href="/mini_project/?page=<?=$countString ?>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
             <?php
-            /** @var PDO $db */
-            $db = require_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
-
-            $stmt = $db ->query('select * from reviews ORDER BY data DESC, time DESC')
+            $tabs = $_GET['page'] * 2 - 2;
+            $list = $db ->query('SELECT * FROM `reviews` LIMIT ' . $tabs . ', 2')
                         ->fetchAll(PDO::FETCH_ASSOC);
             ?>
 			<div class="note">
-                <?php foreach ($stmt as $Record): ?>
+                <?php foreach ($list as $record): ?>
 				<p>
-					<span class="date"><?php echo $Record['data'] . " " . $Record['time'] ?></span>
-					<span class="name"><?php echo $Record['name']?></span>
+					<span class="date"><?php echo $record['data'] . " " . $record['time'] ?></span>
+					<span class="name"><?php echo $record['name']?></span>
 				</p>
-				<p> <?php echo $Record['review']?></p>
+				<p> <?php echo $record['review']?></p>
                 <?php endforeach; ?>
 			</div>
 
-            <div class="info alert alert-info">
-                Запись успешно сохранена!
-            </div>
+            <?php if (isset($_GET['result']) && $_GET['result']): ?>
+                <div class="info alert alert-info">
+                    Запись успешно сохранена!
+                </div>
+            <?php endif; ?>
 
 			<div id="form">
 				<form action="/form/create.php" method="POST">

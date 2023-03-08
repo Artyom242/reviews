@@ -11,4 +11,4 @@ $time = date("H:i:s");
 $query = $db -> prepare ('insert into reviews (name, review, data, time) values (:name, :review, :data, :time)');
 $flag = $query->execute(['name' => $name, 'review' => $review, 'data' => $data, 'time' => $time]);
 
-header('Location: /mini_project');
+header('Location: /mini_project?flag=' . $flag);
